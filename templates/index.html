@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Digital Document Vault | Secure Cloud Storage</title>
+  <meta name="description" content="Digital Document Vault - End-to-end encrypted zero-knowledge document management system powered by Python & MySQL.">
+  <link rel="icon" href="{{ url_for('static', filename='assets/vault_logo.jpg') }}" type="image/jpeg">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <div id="app" class="app-container">
+    <!-- Top Right Circle Theme Toggle Button -->
+    <button id="global-theme-toggle" class="circle-theme-toggle-btn" title="Switch Theme">
+      <i data-lucide="moon" id="theme-icon"></i>
+    </button>
+
+    <!-- AUTH VIEWS CONTAINER -->
+    <div id="auth-container" class="mobile-frame-container animate-fade-in">
+      <!-- 1. LOGIN VIEW -->
+      <div id="view-login" class="auth-content">
+        <div class="logo-container">
+          <img src="{{ url_for('static', filename='assets/vault_logo.jpg') }}" alt="Vault Logo" class="logo-image">
+          <h1 class="app-title">Digital <span class="blue-text">Document</span> Vault</h1>
+          <p class="app-subtitle">Securely Store Your Documents</p>
+        </div>
+
+        <h2 class="screen-title">Welcome Back!</h2>
+        <p class="screen-subtitle">Login to continue to your account</p>
+
+        <form id="form-login" novalidate>
+          <div class="form-group">
+            <div class="input-wrapper">
+              <span class="input-icon-left"><i data-lucide="mail"></i></span>
+              <input type="email" id="login-email" placeholder="Enter your email" class="form-input" value="komal.patil@gmail.com" required>
+            </div>
+            <div id="login-email-error" class="error-message"></div>
+          </div>
+
+          <div class="form-group">
+            <div class="input-wrapper">
+              <span class="input-icon-left"><i data-lucide="lock"></i></span>
+              <input type="password" id="login-password" placeholder="Enter your password" class="form-input has-right-icon" value="password123" required>
+              <button type="button" id="toggle-login-password" class="input-icon-right">
+                <i data-lucide="eye"></i>
+              </button>
+            </div>
+            <div id="login-password-error" class="error-message"></div>
+          </div>
+
+          <div class="forgot-password-link-wrapper">
+            <a href="#" id="link-forgot-password" class="forgot-password-link">Forgot Password?</a>
+          </div>
+
+          <button type="submit" id="btn-login-submit" class="btn-primary">
+            <span>Login</span>
+            <i data-lucide="arrow-right" class="btn-icon"></i>
+          </button>
+        </form>
+
+        <div class="sso-divider">or continue with</div>
+
+        <div class="sso-buttons-container">
+          <button type="button" id="btn-sso-google" class="btn-sso">
+            <svg class="sso-icon" viewBox="0 0 24 24" width="16" height="16">
+              <path fill="#EA4335" d="M12 5.04c1.62 0 3.08.56 4.22 1.64l3.15-3.15C17.45 1.68 14.9 1 12 1 7.35 1 3.4 3.65 1.48 7.5l3.77 2.92C6.17 7.24 8.87 5.04 12 5.04z"/>
+              <path fill="#4285F4" d="M23.49 12.27c0-.81-.07-1.59-.2-2.36H12v4.51h6.44c-.28 1.48-1.12 2.73-2.38 3.58l3.71 2.88c2.16-1.99 3.42-4.91 3.42-8.61z"/>
+              <path fill="#FBBC05" d="M5.25 10.42c-.24-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29L1.48 6.92C.54 8.78 0 10.84 0 13s.54 4.22 1.48 6.08l3.77-2.92c-.24-.72-.38-1.49-.38-2.29z"/>
+              <path fill="#34A853" d="M12 23c3.24 0 5.97-1.07 7.96-2.92l-3.71-2.88c-1.11.75-2.52 1.2-4.25 1.2-3.13 0-5.83-2.2-6.75-5.38L1.48 16c1.92 3.85 5.87 6.5 10.52 6.5z"/>
+            </svg>
+            Google
+          </button>
+          <button type="button" id="btn-sso-microsoft" class="btn-sso">
+            <svg class="sso-icon" viewBox="0 0 23 23" width="16" height="16">
+              <path fill="#f35325" d="M0 0h11v11H0z"/>
+              <path fill="#81bc06" d="M12 0h11v11H12z"/>
+              <path fill="#05a6f0" d="M0 12h11v11H0z"/>
+              <path fill="#ffba08" d="M12 12h11v11H12z"/>
+            </svg>
+            Microsoft
+          </button>
+        </div>
+
+        <div class="auth-footer">
+          Don't have an account? 
+          <a href="#" id="link-goto-register" class="auth-footer-link">Register</a>
+        </div>
+      </div>
+
+      <!-- 2. REGISTER VIEW -->
+      <div id="view-register" class="auth-content hidden">
+        <div class="logo-container">
+          <img src="{{ url_for('static', filename='assets/vault_logo.jpg') }}" alt="Vault Logo" class="logo-image">
+          <h1 class="app-title">Digital <span class="blue-text">Document</span> Vault</h1>
+          <p class="app-subtitle">Securely Store Your Documents</p>
+        </div>
+
+        <h2 class="screen-title">Create Account</h2>
+        <p class="screen-subtitle">Sign up to get started with your secure vault</p>
+
+        <form id="form-register" novalidate>
+          <div class="form-group form-group-compact">
+            <label class="form-label">Full Name</label>
+            <div class="input-wrapper">
+              <span class="input-icon-left"><i data-lucide="user"></i></span>
+              <input type="text" id="reg-name" placeholder="Enter your full name" class="form-input form-input-compact" required>
+            </div>
+            <div id="reg-name-error" class="error-message"></div>
+          </div>
+
+          <div class="form-group form-group-compact">
+            <label class="form-label">Email Address</label>
+            <div class="input-wrapper">
+              <span class="input-icon-left"><i data-lucide="mail"></i></span>
+              <input type="email" id="reg-email" placeholder="Enter your email" class="form-input form-input-compact" required>
+            </div>
+            <div id="reg-email-error" class="error-message"></div>
+          </div>
+
+          <div class="form-group form-group-compact">
+            <label class="form-label">Mobile Phone (10 Digits)</label>
+            <div class="input-wrapper">
+              <span class="input-icon-left"><i data-lucide="phone"></i></span>
+              <input type="tel" id="reg-phone" placeholder="Enter 10-digit mobile number" class="form-input form-input-compact" maxlength="10" required>
+            </div>
+            <div id="reg-phone-error" class="error-message"></div>
+          </div>
+
+          <div class="form-group form-group-compact">
+            <label class="form-label">Password</label>
+            <div class="input-wrapper">
+              <span class="input-icon-left"><i data-lucide="lock"></i></span>
+              <input type="password" id="reg-password" placeholder="Create a password" class="form-input form-input-compact has-right-icon" required>
+              <button type="button" id="toggle-reg-password" class="input-icon-right">
+                <i data-lucide="eye"></i>
+              </button>
+            </div>
+            <div id="reg-password-error" class="error-message"></div>
+          </div>
+
+          <button type="submit" id="btn-register-submit" class="btn-primary" style="margin-top:12px;">
+            <span>Register</span>
+            <i data-lucide="user-plus"></i>
+          </button>
+        </form>
+
+        <div class="auth-footer" style="margin-top:12px;">
+          Already have an account? 
+          <a href="#" id="link-goto-login" class="auth-footer-link">Login</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. FORGOT PASSWORD SPLIT CARD VIEW -->
+    <div id="view-forgot" class="split-card-container hidden">
+      <div class="split-card-left">
+        <div class="brand-header">
+          <i data-lucide="shield" class="brand-icon"></i>
+          <span class="brand-name">Digital Document Vault</span>
+        </div>
+        <div class="split-left-visuals">
+          <div class="visual-graphic-wrapper">
+            <div class="visual-bg-circle"></div>
+            <svg class="visual-lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+          <h3 class="visual-title">Forgot Password?</h3>
+          <p class="visual-desc">Don't worry! It happens. Enter your email and we'll send you a link to reset your password.</p>
+        </div>
+        <div class="slider-dots">
+          <span class="slider-dot"></span>
+          <span class="slider-dot active"></span>
+          <span class="slider-dot"></span>
+        </div>
+      </div>
+
+      <div class="split-card-right">
+        <div id="forgot-form-section" class="animate-fade-in">
+          <h2 class="split-right-title">Forgot Password</h2>
+          <p class="split-right-desc">Enter your registered email address and we'll send you a link to reset your password.</p>
+          <form id="form-forgot" novalidate>
+            <div class="form-group">
+              <label class="form-label">Email Address</label>
+              <div class="input-wrapper">
+                <span class="input-icon-left"><i data-lucide="mail"></i></span>
+                <input type="email" id="forgot-email" placeholder="Enter your email" class="form-input" required>
+              </div>
+              <div id="forgot-email-error" class="error-message"></div>
+            </div>
+            <button type="submit" id="btn-forgot-submit" class="btn-primary" style="margin-top:24px;">
+              <span>Send Reset Link</span>
+              <i data-lucide="send"></i>
+            </button>
+          </form>
+          <button type="button" id="btn-forgot-back" class="back-to-login-btn">
+            <i data-lucide="arrow-left" class="back-icon"></i>
+            <span>Back to Login</span>
+          </button>
+        </div>
+
+        <div id="forgot-success-section" class="animate-fade-in hidden" style="text-align:center;">
+          <div style="color:#10b981; margin-bottom:16px;">
+            <i data-lucide="check-circle" style="width:64px; height:64px; margin:0 auto;"></i>
+          </div>
+          <h2 class="split-right-title">Reset Link Sent!</h2>
+          <p class="split-right-desc">We have sent a password reset link to <strong id="sent-target-email"></strong>. Please check your inbox and spam folder.</p>
+          <button type="button" id="btn-forgot-done-back" class="btn-primary">
+            <i data-lucide="arrow-left"></i>
+            <span>Back to Login</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 4. VAULT LOADER ANIMATION VIEW -->
+    <div id="view-loader" class="mobile-frame-container animate-scale-up hidden" style="text-align:center;">
+      <div class="auth-loader-container">
+        <div class="loader-ring-wrapper">
+          <svg class="loader-ring-svg" viewBox="0 0 120 120">
+            <circle class="loader-ring-bg" cx="60" cy="60" r="52" />
+            <circle id="loader-ring-fill-circle" class="loader-ring-fill" cx="60" cy="60" r="52" style="stroke-dasharray: 326.72; stroke-dashoffset: 326.72;" />
+          </svg>
+          <div class="loader-center-icon"><i data-lucide="shield" style="width:36px; height:36px;"></i></div>
+        </div>
+        <h2 id="loader-welcome-text" class="loader-welcome-title">Welcome!</h2>
+        <p class="loader-subtitle">Initializing Zero-Knowledge Encryption...</p>
+        <div class="loader-status-card">
+          <i data-lucide="shield-check" style="color:#10b981; width:18px; height:18px;"></i>
+          <span>AES-256 Bit Encryption Active</span>
+        </div>
+        <div class="loader-progress-box">
+          <div class="loader-progress-bar-bg">
+            <div id="loader-progress-bar-fill" class="loader-progress-bar-fill" style="width:0%;"></div>
+          </div>
+          <div class="loader-progress-footer">
+            <span>Authenticating Vault</span>
+            <span id="loader-progress-percentage">0%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. MAIN DASHBOARD VIEW -->
+    <div id="view-dashboard" class="dashboard-layout hidden">
+      <!-- HEADER -->
+      <header class="dashboard-header">
+        <div class="header-left">
+          <button id="mobile-menu-toggle" class="btn-icon-ghost mobile-only-btn">
+            <i data-lucide="menu"></i>
+          </button>
+          <div class="brand-box">
+            <img src="{{ url_for('static', filename='assets/vault_logo.jpg') }}" alt="Logo" class="dashboard-logo">
+            <div class="brand-titles">
+              <h1 class="dash-title">Digital <span class="blue-text">Document</span> Vault</h1>
+              <p class="dash-subtitle">Enterprise Zero-Knowledge Cloud</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="header-center">
+          <div class="search-bar-wrapper">
+            <i data-lucide="search" class="search-icon"></i>
+            <input type="text" id="dashboard-search-input" placeholder="Search files, categories, contracts..." class="search-input">
+          </div>
+        </div>
+
+        <div class="header-right">
+          <div class="user-profile-badge" id="btn-open-user-profile">
+            <div class="user-avatar-small" id="header-avatar-letter">K</div>
+            <div class="user-name-box">
+              <span class="user-name-text" id="header-user-name">Komal Patil</span>
+              <span class="user-role-tag" id="header-user-plan">Free Vault</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="dashboard-body">
+        <!-- SIDEBAR -->
+        <aside id="sidebar-drawer" class="dashboard-sidebar">
+          <div class="sidebar-top">
+            <label class="btn-upload-primary">
+              <i data-lucide="upload"></i>
+              <span>Upload Document</span>
+              <input type="file" id="file-upload-input" multiple style="display:none;">
+            </label>
+
+            <nav class="sidebar-nav">
+              <a href="#" class="nav-item active" data-tab="Dashboard">
+                <i data-lucide="folder"></i>
+                <span>All Documents</span>
+              </a>
+              <a href="#" class="nav-item" data-tab="Favorites">
+                <i data-lucide="star"></i>
+                <span>Favorites</span>
+              </a>
+              <a href="#" class="nav-item" data-tab="Shared">
+                <i data-lucide="share-2"></i>
+                <span>Shared with me</span>
+              </a>
+              <a href="#" class="nav-item" data-tab="Trash">
+                <i data-lucide="trash-2"></i>
+                <span>Trash</span>
+              </a>
+              <a href="#" class="nav-item" data-tab="Support">
+                <i data-lucide="help-circle"></i>
+                <span>Help & Support</span>
+              </a>
+            </nav>
+          </div>
+
+          <!-- STORAGE STATS CARD -->
+          <div class="storage-widget-card">
+            <div class="widget-header">
+              <span class="widget-title">Storage Used</span>
+              <span id="storage-percentage-text" class="widget-badge">1.5%</span>
+            </div>
+            <div class="storage-bar-bg">
+              <div id="storage-bar-fill" class="storage-bar-fill" style="width: 1.5%;"></div>
+            </div>
+            <div class="storage-stats-footer">
+              <span id="storage-used-mb-text">15.9 MB used</span>
+              <span id="storage-total-gb-text">of 20 GB</span>
+            </div>
+            <button id="btn-open-upgrade-plan" class="btn-upgrade-plan">
+              <i data-lucide="crown"></i>
+              <span>Upgrade Plan</span>
+            </button>
+          </div>
+        </aside>
+
+        <!-- MAIN DASHBOARD CONTENT AREA -->
+        <main class="dashboard-main-content">
+          <!-- TOP TOOLBAR & CATEGORY PILLS -->
+          <div class="dashboard-toolbar">
+            <div class="toolbar-left">
+              <h2 id="current-tab-title" class="section-heading">All Documents</h2>
+              <span id="doc-count-badge" class="count-pill">6 files</span>
+            </div>
+
+            <div class="category-pills-row" id="categories-container">
+              <!-- Dynamically Populated Category Pills -->
+            </div>
+          </div>
+
+          <!-- DOCUMENTS TABLE GRID -->
+          <div class="documents-table-container">
+            <table class="vault-table">
+              <thead>
+                <tr>
+                  <th style="width:40px;"></th>
+                  <th>Document Name</th>
+                  <th>Category</th>
+                  <th>Date Modified</th>
+                  <th>Size</th>
+                  <th style="text-align:right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="documents-tbody">
+                <!-- Dynamically Populated Document Rows -->
+              </tbody>
+            </table>
+            
+            <div id="empty-state-view" class="empty-state-box hidden">
+              <i data-lucide="folder" class="empty-icon"></i>
+              <h3>No Documents Found</h3>
+              <p>Upload a file or clear search filters to view your stored items.</p>
+            </div>
+          </div>
+
+          <!-- HELP & SUPPORT SECTION (Hidden by default) -->
+          <div id="support-section" class="support-section-container hidden animate-fade-in">
+            <h2 class="section-heading">Help Center & Frequently Asked Questions</h2>
+            <div class="support-grid">
+              <div class="faq-accordion-box" id="faq-accordion">
+                <!-- FAQ Accordion Items -->
+              </div>
+              <div class="contact-form-card">
+                <h3>Contact Vault Support</h3>
+                <form id="form-support-ticket">
+                  <div class="form-group">
+                    <label class="form-label">Subject</label>
+                    <input type="text" id="support-subject" class="form-input" placeholder="How can we help?" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label">Message</label>
+                    <textarea id="support-message" class="form-input" rows="4" placeholder="Describe your question or issue..." required></textarea>
+                  </div>
+                  <button type="submit" class="btn-primary">
+                    <i data-lucide="send"></i>
+                    <span>Submit Ticket</span>
+                  </button>
+                  <div id="support-success-msg" class="success-message hidden" style="margin-top:10px;">Ticket submitted! Our team will respond shortly.</div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- MODAL 1: DOCUMENT PREVIEW MODAL -->
+    <div id="modal-doc-preview" class="modal-overlay hidden">
+      <div class="profile-modal-card animate-scale-up" style="max-width:550px;">
+        <div class="profile-modal-header">
+          <div class="profile-modal-title">
+            <i data-lucide="eye"></i>
+            <span>Document Details & Preview</span>
+          </div>
+          <button class="close-btn" class="btn-close-preview"><i data-lucide="x"></i></button>
+        </div>
+        <div style="padding:20px;">
+          <div style="display:flex; align-items:center; gap:16px; margin-bottom:16px;">
+            <div id="preview-icon-box" style="width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:white; font-size:20px; font-weight:bold;">
+              <i data-lucide="file-text"></i>
+            </div>
+            <div>
+              <h3 id="preview-doc-name" style="margin:0; font-size:16px; font-weight:700;">Document Title</h3>
+              <span id="preview-doc-category" class="category-badge">Category</span>
+            </div>
+          </div>
+          <div class="profile-details-grid">
+            <div class="detail-item">
+              <span class="detail-label">File Size</span>
+              <span id="preview-doc-size" class="detail-value">0 MB</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Date Created</span>
+              <span id="preview-doc-date" class="detail-value">May 20, 2024</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Security Protocol</span>
+              <span class="detail-value">AES-256 Bit Encrypted</span>
+            </div>
+          </div>
+          <div style="margin-top:16px; padding:12px; background:var(--bg-subtle); border-radius:8px; font-size:12px; color:var(--text-muted);">
+            <strong>Vault Security Notice:</strong> This document is protected with zero-knowledge encryption keys. Only authorized session credentials can access or download this payload.
+          </div>
+        </div>
+        <div class="profile-modal-footer">
+          <button class="btn-secondary btn-close-preview">Close</button>
+          <button id="btn-preview-download" class="btn-primary">
+            <i data-lucide="download"></i> Download File
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 2: SHARE DOCUMENT MODAL -->
+    <div id="modal-share-doc" class="modal-overlay hidden">
+      <div class="profile-modal-card animate-scale-up" style="max-width:480px;">
+        <div class="profile-modal-header">
+          <div class="profile-modal-title">
+            <i data-lucide="share-2"></i>
+            <span>Share Document</span>
+          </div>
+          <button class="close-btn" class="btn-close-share"><i data-lucide="x"></i></button>
+        </div>
+        <form id="form-share-doc" style="padding:20px;">
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">
+            Grant secure zero-knowledge viewing access to <strong id="share-target-doc-name">document.pdf</strong>.
+          </p>
+          <div class="form-group">
+            <label class="form-label">Recipient Email Address</label>
+            <div class="input-wrapper">
+              <span class="input-icon-left"><i data-lucide="mail"></i></span>
+              <input type="email" id="share-recipient-email" class="form-input" placeholder="colleague@example.com" required>
+            </div>
+          </div>
+          <div id="share-success-alert" class="success-message hidden">Successfully shared!</div>
+          <div class="profile-modal-footer" style="padding:0; margin-top:16px;">
+            <button type="button" class="btn-secondary btn-close-share">Cancel</button>
+            <button type="submit" class="btn-primary">
+              <i data-lucide="send"></i> Share Access
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL 3: ADD CATEGORY MODAL -->
+    <div id="modal-add-category" class="modal-overlay hidden">
+      <div class="profile-modal-card animate-scale-up" style="max-width:420px;">
+        <div class="profile-modal-header">
+          <div class="profile-modal-title">
+            <i data-lucide="plus"></i>
+            <span>Add New Category</span>
+          </div>
+          <button class="close-btn" class="btn-close-add-cat"><i data-lucide="x"></i></button>
+        </div>
+        <form id="form-add-category" style="padding:20px;">
+          <div class="form-group">
+            <label class="form-label">Category Name</label>
+            <input type="text" id="new-cat-input-name" class="form-input" placeholder="e.g. Legal, Taxes, Design..." required>
+          </div>
+          <div class="profile-modal-footer" style="padding:0; margin-top:16px;">
+            <button type="button" class="btn-secondary btn-close-add-cat">Cancel</button>
+            <button type="submit" class="btn-primary">Save Category</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL 4: USER PROFILE MODAL -->
+    <div id="modal-user-profile" class="modal-overlay hidden">
+      <div class="profile-modal-card animate-scale-up">
+        <div class="profile-modal-header">
+          <div class="profile-modal-title">
+            <i data-lucide="user"></i>
+            <span>User Profile Information</span>
+          </div>
+          <button class="close-btn" class="btn-close-profile"><i data-lucide="x"></i></button>
+        </div>
+
+        <div id="profile-success-msg" class="profile-save-success-banner hidden">
+          <i data-lucide="check-circle-2"></i>
+          <span>Profile information updated successfully!</span>
+        </div>
+
+        <div class="profile-hero">
+          <div class="profile-avatar-large" id="modal-avatar-letter">K</div>
+          <div class="profile-hero-info">
+            <h3 class="profile-hero-name" id="modal-user-fullname">Komal Patil</h3>
+            <span class="profile-hero-badge">
+              <i data-lucide="check-circle-2" style="width:13px; height:13px;"></i> Verified Vault Member
+            </span>
+          </div>
+          <button id="btn-toggle-edit-profile" class="btn-edit-profile-toggle">
+            <i data-lucide="edit-3"></i>
+            <span id="edit-profile-btn-text">Edit Profile</span>
+          </button>
+        </div>
+
+        <form id="form-user-profile" style="padding:20px;">
+          <div class="profile-details-grid">
+            <div class="detail-item">
+              <div class="detail-icon"><i data-lucide="user"></i></div>
+              <div class="detail-content">
+                <span class="detail-label">Full Name</span>
+                <input type="text" id="prof-input-name" class="profile-edit-input" disabled required>
+              </div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-icon"><i data-lucide="mail"></i></div>
+              <div class="detail-content">
+                <span class="detail-label">Email Address</span>
+                <input type="email" id="prof-input-email" class="profile-edit-input" disabled required>
+              </div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-icon"><i data-lucide="phone"></i></div>
+              <div class="detail-content">
+                <span class="detail-label">Mobile Phone</span>
+                <input type="tel" id="prof-input-phone" class="profile-edit-input" maxlength="10" disabled required>
+              </div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-icon"><i data-lucide="laptop"></i></div>
+              <div class="detail-content">
+                <span class="detail-label">Active Device</span>
+                <input type="text" id="prof-input-device" class="profile-edit-input" disabled required>
+              </div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-icon"><i data-lucide="key"></i></div>
+              <div class="detail-content">
+                <span class="detail-label">Security Protocol</span>
+                <span class="detail-value">AES-256 Zero-Knowledge</span>
+              </div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-icon"><i data-lucide="calendar"></i></div>
+              <div class="detail-content">
+                <span class="detail-label">Session Status</span>
+                <span class="detail-value">Active & Synchronized</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-modal-footer">
+            <div id="profile-view-buttons">
+              <button type="button" class="btn-secondary btn-close-profile">Close</button>
+              <button type="button" id="btn-profile-logout" class="btn-logout-danger">
+                <i data-lucide="log-out"></i> Logout Account
+              </button>
+            </div>
+            <div id="profile-edit-buttons" class="hidden">
+              <button type="submit" class="btn-save-profile">
+                <i data-lucide="save"></i> Save Changes
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- MODAL 5: UPGRADE PLAN MODAL -->
+    <div id="modal-upgrade-plan" class="modal-overlay hidden">
+      <div class="upgrade-modal-card animate-scale-up">
+        <div class="modal-header-row">
+          <div class="modal-title-box">
+            <i data-lucide="crown" class="crown-icon"></i>
+            <span>Upgrade Storage Plan</span>
+          </div>
+          <button class="close-btn" class="btn-close-upgrade"><i data-lucide="x"></i></button>
+        </div>
+
+        <div id="upgrade-success-view" class="upgrade-success-view animate-scale-up hidden">
+          <div class="success-badge-icon">
+            <i data-lucide="check" style="width:36px; height:36px;"></i>
+          </div>
+          <h2 style="font-size: 20px; color: var(--text-main); margin-bottom: 6px;">Plan Upgraded Successfully!</h2>
+          <p style="font-size: 13px; color: var(--text-muted);">
+            Your vault storage has been expanded.
+          </p>
+        </div>
+
+        <div id="upgrade-plans-content">
+          <p class="modal-subtitle-text">
+            Expand your digital document vault capacity with end-to-end zero-knowledge encryption.
+          </p>
+
+          <div class="plans-grid">
+            <div class="plan-card" data-plan="Free Vault">
+              <h4 class="plan-name">Free Vault</h4>
+              <div class="plan-price">$0 <span class="price-period">/Forever Free</span></div>
+              <p style="font-size: 11px; font-weight: 700; color: var(--primary); margin-bottom: 8px;">20 GB</p>
+              <ul class="plan-features">
+                <li><i data-lucide="check" style="color:#10b981;"></i> 20 GB Encrypted Storage</li>
+                <li><i data-lucide="check" style="color:#10b981;"></i> AES-256 Bit Security</li>
+                <li><i data-lucide="check" style="color:#10b981;"></i> Standard Sharing</li>
+              </ul>
+            </div>
+
+            <div class="plan-card popular selected" data-plan="Pro Vault">
+              <span class="plan-badge popular-tag">MOST POPULAR</span>
+              <h4 class="plan-name">Pro Vault</h4>
+              <div class="plan-price">$9.99 <span class="price-period">/per month</span></div>
+              <p style="font-size: 11px; font-weight: 700; color: var(--primary); margin-bottom: 8px;">1 TB (1,000 GB)</p>
+              <ul class="plan-features">
+                <li><i data-lucide="check" style="color:#10b981;"></i> 1 TB Unlimited Storage</li>
+                <li><i data-lucide="check" style="color:#10b981;"></i> Zero-Knowledge Encryption</li>
+                <li><i data-lucide="check" style="color:#10b981;"></i> Priority Support</li>
+              </ul>
+            </div>
+
+            <div class="plan-card" data-plan="Enterprise Vault">
+              <h4 class="plan-name">Enterprise Vault</h4>
+              <div class="plan-price">$29.99 <span class="price-period">/per month</span></div>
+              <p style="font-size: 11px; font-weight: 700; color: var(--primary); margin-bottom: 8px;">Unlimited Storage</p>
+              <ul class="plan-features">
+                <li><i data-lucide="check" style="color:#10b981;"></i> Unlimited Storage</li>
+                <li><i data-lucide="check" style="color:#10b981;"></i> Custom SLA & Key Logs</li>
+                <li><i data-lucide="check" style="color:#10b981;"></i> Dedicated Admin Account</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="modal-actions-row">
+            <button class="btn-cancel btn-close-upgrade">Cancel</button>
+            <button id="btn-confirm-upgrade" class="btn-confirm-upgrade">
+              <i data-lucide="shield-check"></i> Confirm Upgrade
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
